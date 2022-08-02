@@ -2,11 +2,18 @@ import { Card, Form, Input, Checkbox, Button } from "antd";
 import logo from "@/assets/logo.png";
 import "./index.scss";
 
+import useStore from "@/store";
+
 function Login() {
-  const onFinish = (values: Object) => {
+  const { loginStore } = useStore();
+  const onFinish = (values: { mobile: string; code: string }) => {
     // values 放置所有标单项中用户输入的内容
-    // todo: 登陆
     console.log(values);
+    // todo: 登陆
+    loginStore.getToken({
+      mobile: values.mobile,
+      code: values.code,
+    });
   };
   const onFinishFailed = (errorInfo: Object) => {
     console.log("errorInfo => ", errorInfo);

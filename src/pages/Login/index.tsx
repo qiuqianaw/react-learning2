@@ -7,11 +7,40 @@ function Login() {
     <div className="login">
       <Card className="login-container">
         <img className="login-logo" src={logo} alt="" />
-        <Form initialValues={{ remember: true }}>
-          <Form.Item>
+        <Form
+          validateTrigger={["onBlur", "onChange"]}
+          initialValues={{ remember: true }}
+        >
+          <Form.Item
+            name="mobile"
+            rules={[
+              {
+                pattern: /^1[3-9]\d{9}$/,
+                message: "please input correct phone number!",
+                validateTrigger: "onBlur",
+              },
+              {
+                required: true,
+                message: "please input your phone number!",
+              },
+            ]}
+          >
             <Input size="large" placeholder="请输入手机号" />
           </Form.Item>
-          <Form.Item>
+          <Form.Item
+            name="code"
+            rules={[
+              {
+                len: 6,
+                message: "please input 6 code",
+                validateTrigger: "onBlur",
+              },
+              {
+                required: true,
+                message: "please input code!",
+              },
+            ]}
+          >
             <Input size="large" placeholder="请输入验证码" />
           </Form.Item>
           <Form.Item name="remember" valuePropName="checked">

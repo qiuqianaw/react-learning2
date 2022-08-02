@@ -3,6 +3,15 @@ import logo from "@/assets/logo.png";
 import "./index.scss";
 
 function Login() {
+  const onFinish = (values: Object) => {
+    // values 放置所有标单项中用户输入的内容
+    // todo: 登陆
+    console.log(values);
+  };
+  const onFinishFailed = (errorInfo: Object) => {
+    console.log("errorInfo => ", errorInfo);
+  };
+
   return (
     <div className="login">
       <Card className="login-container">
@@ -10,6 +19,8 @@ function Login() {
         <Form
           validateTrigger={["onBlur", "onChange"]}
           initialValues={{ remember: true }}
+          onFinish={onFinish}
+          onFinishFailed={onFinishFailed}
         >
           <Form.Item
             name="mobile"

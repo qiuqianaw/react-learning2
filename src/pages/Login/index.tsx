@@ -1,20 +1,31 @@
-import { Card, Form, Input, Checkbox, Button } from "antd";
+import { Card, Form, Input, Checkbox, Button, message } from "antd";
 import logo from "@/assets/logo.png";
 import "./index.scss";
 
 import useStore from "@/store";
+import { useNavigate } from "react-router-dom";
 
 function Login() {
   const { loginStore } = useStore();
-  const onFinish = (values: { mobile: string; code: string }) => {
+  const navigate = useNavigate();
+
+  async function onFinish(values: { mobile: string; code: string }) {
     // values 放置所有标单项中用户输入的内容
     console.log(values);
     // todo: 登陆
-    loginStore.getToken({
-      mobile: values.mobile,
-      code: values.code,
-    });
-  };
+    try {
+      await loginStore.getToken({
+        mobile: values.mobile,
+        code: values.code,
+      });
+      // 跳转首页
+      navigate("/", { replace: true });
+      // 提示
+      message.success("登陆成功");
+    } catch (error: any) {
+      message.error(error.response?.data?.message || "登录失败");
+    }
+  }
   const onFinishFailed = (errorInfo: Object) => {
     console.log("errorInfo => ", errorInfo);
   };

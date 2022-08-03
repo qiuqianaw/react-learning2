@@ -3,6 +3,11 @@ import Layout from "./pages/Layout";
 // import Login from "./pages/Login";
 import Login from "@/pages/Login";
 import { AuthRoute } from "./components/AuthRoute";
+import "./App.css";
+
+import Home from "./pages/Home";
+import Article from "./pages/Article";
+import Publish from "./pages/Publish";
 
 function App() {
   return (
@@ -16,7 +21,11 @@ function App() {
                 <Layout />
               </AuthRoute>
             }
-          />
+          >
+            <Route index element={<Home />} />
+            <Route path="/Article" element={<Article />} />
+            <Route path="/Publish" element={<Publish />} />
+          </Route>
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>

@@ -6,21 +6,38 @@ import {
   LogoutOutlined,
 } from "@ant-design/icons";
 import "./index.scss";
-import { Outlet, Link, useLocation } from "react-router-dom";
+import { Outlet, Link, useLocation, useNavigate } from "react-router-dom";
+import useStore from "@/store";
+import { useEffect } from "react";
+import { observer } from "mobx-react-lite";
 
 const { Header, Sider } = Layout;
 
 const GeekLayout = () => {
   const { pathname } = useLocation();
-
+  const { userStore, loginStore } = useStore();
+  useEffect(() => {
+    userStore.getUserInfo();
+  }, [userStore]);
+  const navigate = useNavigate();
+  const onConfirm = () => {
+    //  退出登陆 删除token 跳回登陆
+    loginStore.loginOut();
+    navigate("/login");
+  };
   return (
     <Layout>
       <Header className="header">
         <div className="logo" />
         <div className="user-info">
-          <span className="user-name">user.name</span>
+          <span className="user-name">{(userStore.userInfo as any).name}</span>
           <span className="user-logout">
-            <Popconfirm title="是否确认退出？" okText="退出" cancelText="取消">
+            <Popconfirm
+              title="是否确认退出？"
+              okText="退出"
+              cancelText="取消"
+              onConfirm={onConfirm}
+            >
               <LogoutOutlined /> 退出
             </Popconfirm>
           </span>
@@ -53,4 +70,4 @@ const GeekLayout = () => {
   );
 };
 
-export default GeekLayout;
+export default observer(GeekLayout);

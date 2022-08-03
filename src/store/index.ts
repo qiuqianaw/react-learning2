@@ -1,8 +1,10 @@
 import React from "react";
 import LoginStore from "./login.Store";
+import UserStore from "./user.Store";
 
 export const rootStore = {
   loginStore: new LoginStore(),
+  userStore: new UserStore(),
 };
 
 // class RootStore {

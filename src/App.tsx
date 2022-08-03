@@ -1,4 +1,9 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import {
+  unstable_HistoryRouter as HistoryRouter,
+  Routes,
+  Route,
+} from "react-router-dom";
+import { history } from "./utils/history";
 import Layout from "./pages/Layout";
 // import Login from "./pages/Login";
 import Login from "@/pages/Login";
@@ -11,7 +16,7 @@ import Publish from "./pages/Publish";
 
 function App() {
   return (
-    <BrowserRouter>
+    <HistoryRouter history={history}>
       <div className="App">
         <Routes>
           <Route
@@ -29,7 +34,7 @@ function App() {
           <Route path="/login" element={<Login />} />
         </Routes>
       </div>
-    </BrowserRouter>
+    </HistoryRouter>
   );
 }
 

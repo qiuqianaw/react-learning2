@@ -36,8 +36,28 @@ const Article = () => {
     loadChannelList();
   }, []);
 
-  const onFinish = (value: Object) => {
-    console.log(value);
+  const onFinish = (value: {
+    channel_id: number;
+    date: Array<any>;
+    status: number;
+  }) => {
+    const { channel_id, date, status } = value;
+    // 数据处理
+    const _params: any = {};
+    if (status !== -1) {
+      _params.status = status;
+    }
+    if (channel_id) {
+      _params.channel_id = channel_id;
+    }
+    if (date) {
+      _params.begin_pubdate = date[0].format("YY-MM-DD");
+      _params.end_pubdate = date[1].format("YY-MM-DD");
+    }
+    setParams({
+      ...params,
+      ..._params,
+    });
   };
 
   // 文章列表管理 统一管理数据 将来修改给setList传对象
@@ -55,7 +75,6 @@ const Article = () => {
   useEffect(() => {
     const loadList = async () => {
       const res = await http.get("/mp/articles", { params });
-      console.log(res);
       const { results, total_count } = res.data;
       setArticleData({ list: results, count: total_count });
     };

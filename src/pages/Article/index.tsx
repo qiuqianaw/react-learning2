@@ -20,22 +20,14 @@ import img404 from "@/assets/error.png";
 import { useState } from "react";
 import { useEffect } from "react";
 import { http } from "@/utils";
+import useStore from "@/store";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const Article = () => {
   // 频道列表管理
-  const [channelList, setChannelList] = useState([]);
-
-  const loadChannelList = async () => {
-    const res = await http.get("/channels");
-    setChannelList(res.data.channels);
-  };
-  useEffect(() => {
-    loadChannelList();
-  }, []);
-
+  const { channelStore } = useStore();
   const onFinish = (value: {
     channel_id: number;
     date: Array<any>;
@@ -181,12 +173,11 @@ const Article = () => {
 
           <Form.Item label="频道" name="channel_id">
             <Select placeholder="请选择文章频道" style={{ width: 120 }}>
-              {channelList &&
-                channelList.map((channel: any) => (
-                  <Option key={channel.id} value={channel.id}>
-                    {channel.name}
-                  </Option>
-                ))}
+              {channelStore.channelList.map((channel: any) => (
+                <Option key={channel.id} value={channel.id}>
+                  {channel.name}
+                </Option>
+              ))}
             </Select>
           </Form.Item>
 

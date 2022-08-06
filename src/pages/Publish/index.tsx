@@ -14,10 +14,12 @@ import { Link } from "react-router-dom";
 import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
+import useStore from "@/store";
 
 const { Option } = Select;
 
 const Publish = () => {
+  const { channelStore } = useStore();
   return (
     <div className="publish">
       <Card
@@ -48,7 +50,13 @@ const Publish = () => {
             rules={[{ required: true, message: "请选择文章频道" }]}
           >
             <Select placeholder="请选择文章频道" style={{ width: 400 }}>
-              <Option value={0}>推荐</Option>
+              {channelStore.channelList.map(
+                (channel: { name: string; id: number }) => (
+                  <Option value={channel.id} key={channel.id}>
+                    {channel.name}
+                  </Option>
+                )
+              )}
             </Select>
           </Form.Item>
 

@@ -1,10 +1,12 @@
 import React from "react";
 import LoginStore from "./login.Store";
 import UserStore from "./user.Store";
+import ChannelStore from "./channel.Store";
 
 export const rootStore = {
   loginStore: new LoginStore(),
   userStore: new UserStore(),
+  channelStore: new ChannelStore(),
 };
 
 // class RootStore {

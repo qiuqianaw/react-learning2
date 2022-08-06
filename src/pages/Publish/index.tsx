@@ -15,11 +15,48 @@ import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import useStore from "@/store";
+import { useRef, useState } from "react";
+import { http } from "@/utils";
 
 const { Option } = Select;
 
 const Publish = () => {
   const { channelStore } = useStore();
+  const [fileList, setFileList] = useState([]);
+  const cacheImgList: any = useRef();
+  const onUploadChange = (result: any) => {
+    setFileList(result);
+    cacheImgList.current = result;
+  };
+  const [imageCount, setImageCount] = useState(1);
+  const radioChange = (e: any) => {
+    const rawValue = e.target.value;
+    setImageCount(rawValue);
+    if (rawValue === 1) {
+      const img: any = cacheImgList.current ? cacheImgList.current[0] : [];
+      // todo
+      setFileList(img);
+    } else if (rawValue === 3) {
+      setFileList(cacheImgList.current);
+    }
+  };
+  const onFinish = (values) => {
+    const { channel_id, content, title, type } = values;
+    const params = {
+      channel_id,
+      content,
+      title,
+      type,
+      cover: {
+        type: type,
+        images: fileList.map((item: any) => item.response.data.url),
+      },
+    };
+    uploadFn(params);
+  };
+  const uploadFn = async (params) => {
+    await http.post("/mp/articles?draft=false", params);
+  };
   return (
     <div className="publish">
       <Card
@@ -36,6 +73,7 @@ const Publish = () => {
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 1, content: "" }}
+          onFinish={onFinish}
         >
           <Form.Item
             label="标题"
@@ -62,22 +100,29 @@ const Publish = () => {
 
           <Form.Item label="封面">
             <Form.Item name="type">
-              <Radio.Group>
+              <Radio.Group onChange={radioChange}>
                 <Radio value={1}>单图</Radio>
                 <Radio value={3}>三图</Radio>
                 <Radio value={0}>无图</Radio>
               </Radio.Group>
             </Form.Item>
-            <Upload
-              name="image"
-              listType="picture-card"
-              className="avatar-uploader"
-              showUploadList
-            >
-              <div style={{ marginTop: 8 }}>
-                <PlusOutlined />
-              </div>
-            </Upload>
+            {imageCount > 0 && (
+              <Upload
+                name="image"
+                listType="picture-card"
+                className="avatar-uploader"
+                showUploadList
+                action="http://geek.itheima.net/v1_0/upload"
+                fileList={fileList}
+                onChange={onUploadChange}
+                multiple={imageCount > 1}
+                maxCount={imageCount}
+              >
+                <div style={{ marginTop: 8 }}>
+                  <PlusOutlined />
+                </div>
+              </Upload>
+            )}
           </Form.Item>
           <Form.Item
             label="内容"

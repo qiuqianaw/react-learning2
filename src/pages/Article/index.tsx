@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Card,
   Breadcrumb,
@@ -80,6 +80,19 @@ const Article = () => {
     };
     loadList();
   }, [params]);
+
+  const deleteArticle = async (data: { id: number }) => {
+    await http.delete(`/mp/articles/${data.id}`);
+    setParams({
+      ...params,
+      page: 1,
+    });
+  };
+  const navigate = useNavigate();
+
+  const goPublish = async (data: { id: number }) => {
+    navigate(`/publish?id=${data.id}`);
+  };
   const columns = [
     {
       title: "封面",
@@ -120,18 +133,28 @@ const Article = () => {
       render: (data) => {
         return (
           <Space size="middle">
-            <Button type="primary" shape="circle" icon={<EditOutlined />} />
+            <Button
+              type="primary"
+              shape="circle"
+              icon={<EditOutlined />}
+              onClick={() => goPublish(data)}
+            />
             <Button
               type="primary"
               danger
               shape="circle"
               icon={<DeleteOutlined />}
+              onClick={() => deleteArticle(data)}
             />
           </Space>
         );
       },
     },
   ];
+
+  const pageChange = (page: any) => {
+    setParams({ ...params, page });
+  };
   return (
     <div>
       <Card
@@ -180,7 +203,17 @@ const Article = () => {
         </Form>
       </Card>
       <Card title={`根据筛选条件共查询到 ${articleData.count} 条结果：`}>
-        <Table rowKey="id" columns={columns} dataSource={articleData.list} />
+        <Table
+          rowKey="id"
+          columns={columns}
+          dataSource={articleData.list}
+          pagination={{
+            position: ["bottomCenter"],
+            current: params.page,
+            pageSize: params.perPage,
+            onChange: pageChange,
+          }}
+        />
       </Card>
     </div>
   );

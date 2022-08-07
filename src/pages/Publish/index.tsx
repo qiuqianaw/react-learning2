@@ -8,9 +8,10 @@ import {
   Upload,
   Space,
   Select,
+  message,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
@@ -42,9 +43,15 @@ const Publish = () => {
   const { channelStore } = useStore();
   const [fileList, setFileList] = useState([]);
   const cacheImgList: any = useRef();
-  const onUploadChange = (result: any) => {
-    setFileList(result);
-    cacheImgList.current = result;
+  const onUploadChange = (fileList: any) => {
+    const formatList = fileList.map((file: any) => {
+      if (file.response) {
+        return { url: file.response.data.url };
+      }
+      return file;
+    });
+    setFileList(formatList);
+    cacheImgList.current = formatList;
   };
   const [imageCount, setImageCount] = useState(1);
   const radioChange = (e: any) => {
@@ -58,6 +65,7 @@ const Publish = () => {
       setFileList(cacheImgList.current);
     }
   };
+  const navigate = useNavigate();
   const onFinish = (values) => {
     const { channel_id, content, title, type } = values;
     const params = {
@@ -67,13 +75,19 @@ const Publish = () => {
       type,
       cover: {
         type: type,
-        images: fileList.map((item: any) => item.response.data.url),
+        images: fileList.map((item: any) => item.url),
       },
     };
     uploadFn(params);
+    navigate("/article");
+    message.success(id ? "更新成功" : "发布成功");
   };
   const uploadFn = async (params) => {
-    await http.post("/mp/articles?draft=false", params);
+    if (id) {
+      await http.put(`/mp/articles/${id}?draft=false`, params);
+    } else {
+      await http.post("/mp/articles?draft=false", params);
+    }
   };
   return (
     <div className="publish">

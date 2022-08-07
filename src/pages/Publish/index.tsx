@@ -10,17 +10,35 @@ import {
   Select,
 } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import "./index.scss";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import useStore from "@/store";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { http } from "@/utils";
 
 const { Option } = Select;
 
 const Publish = () => {
+  const [params] = useSearchParams();
+  const id = params.get("id");
+
+  const form: any = useRef(null);
+  useEffect(() => {
+    const loadDetail = async () => {
+      const res = await http.get(`/mp/articles/${id}`);
+      const data = res.data;
+      form.current!.setFieldsValue({ ...res.data, type: res.data.cover.type });
+      const formatImgList = data.cover.images.map((url: string) => ({ url }));
+      setFileList(formatImgList);
+      cacheImgList.current = formatImgList;
+    };
+    if (id) {
+      loadDetail();
+    }
+  }, [id]);
+
   const { channelStore } = useStore();
   const [fileList, setFileList] = useState([]);
   const cacheImgList: any = useRef();
@@ -65,11 +83,12 @@ const Publish = () => {
             <Breadcrumb.Item>
               <Link to="/">首页</Link>
             </Breadcrumb.Item>
-            <Breadcrumb.Item>发布文章</Breadcrumb.Item>
+            <Breadcrumb.Item>{id ? "编辑" : "发布"}文章</Breadcrumb.Item>
           </Breadcrumb>
         }
       >
         <Form
+          ref={form}
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 16 }}
           initialValues={{ type: 1, content: "" }}
@@ -139,7 +158,7 @@ const Publish = () => {
           <Form.Item wrapperCol={{ offset: 4 }}>
             <Space>
               <Button size="large" type="primary" htmlType="submit">
-                发布文章
+                {id ? "更新" : "发布"}文章
               </Button>
             </Space>
           </Form.Item>
